@@ -6,7 +6,7 @@ import config from "./config.js";
 const bot = new Telegraf(config.telegram_token);
 
 const movies_url = `https://imdb-api.com/en/API/Search/${config.imdb_token}/`;
-const books_url = "https://www.googleapis.com/books/v1/volumes?q="
+const books_url = "https://www.googleapis.com/books/v1/volumes?q=";
 
 bot.start((ctx) => ctx.reply("Hello"));
 bot.help((ctx) => ctx.reply("Help message"));
@@ -23,6 +23,9 @@ bot.on("text", (ctx) => {
         if (data.results[0]?.image) {
           ctx.reply(data.results[0].image);
         }
+      })
+      .catch((err) => {
+        ctx.reply("No movie found");
       });
   }
 
@@ -34,13 +37,15 @@ bot.on("text", (ctx) => {
       .then((data) => {
         ctx.reply(data.items[0].volumeInfo.imageLinks.thumbnail);
         ctx.reply(data.items[0].volumeInfo.description);
+      })
+      .catch((err) => {
+        ctx.reply("No book found");
       });
   }
 });
 
 bot.telegram.getMe().then((botInfo) => {
-  bot.options.username = botInfo.username
-})
-
+  bot.options.username = botInfo.username;
+});
 
 bot.launch();
